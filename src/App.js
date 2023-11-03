@@ -1,25 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect} from 'react';
 
-import AddUser from './components/Users/AddUser';
-import UsersList from './components/Users/UsersList';
+import Login from './components/Login/Login';
+import Home from './components/Home/Home';
+import MainHeader from './components/MainHeader/MainHeader';
 
 function App() {
-  const [usersList, setUsersList] = useState([]);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  /* If we dont use useEffect then storedInfo will get item and setIsloggedin will be
+  executed which will re-render the app component again which will create an infinite loop */
+  useEffect(() => {
+    const storedLoginInfo = localStorage.getItem('isLoggedIn');
+    if(storedLoginInfo==='1'){
+      setIsLoggedIn(true);
+    }
+  } , [])
+  const loginHandler = (email, password) => {
+    // We should of course check email and password
+    // But it's just a dummy/ demo anyways
+    localStorage.setItem('isLoggedIn' ,'1');
+    setIsLoggedIn(true)
+  };
 
-  const addUserHandler = (uName, uAge , cName) => {
-    setUsersList((prevUsersList) => {
-      return [
-        ...prevUsersList,
-        { name: uName, age: uAge, id: Math.random().toString() , collegeName: cName },
-      ];
-    });
+  const logoutHandler = () => {
+    setIsLoggedIn(false);
   };
 
   return (
-    <>
-      <AddUser onAddUser={addUserHandler} />
-      <UsersList users={usersList} />
-    </>
+    <React.Fragment>
+      <MainHeader isAuthenticated={isLoggedIn} onLogout={logoutHandler} />
+      <main>
+        {!isLoggedIn && <Login onLogin={loginHandler} />}
+        {isLoggedIn && <Home onLogout={logoutHandler} />}
+      </main>
+    </React.Fragment>
   );
 }
 
