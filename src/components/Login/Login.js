@@ -1,4 +1,4 @@
-import React, { useState , useReducer  , useContext} from 'react';
+import React, { useState , useReducer  , useContext , useRef} from 'react';
 
 import Card from '../UI/Card/Card';
 import classes from './Login.module.css';
@@ -37,17 +37,12 @@ const collegeReducer = (state , action) =>{
   return {value:"" , isValid:true};
 }
 const Login = (props) => {
-  // const [enteredEmail, setEnteredEmail] = useState('');
-  // const [emailIsValid, setEmailIsValid] = useState();
-  // const [enteredPassword, setEnteredPassword] = useState('');
-  // const [passwordIsValid, setPasswordIsValid] = useState();
-  // const [enteredCollege , setEnteredCollege] = useState('');
-  // const [collegeIsValid, setCollegeIsValid] = useState();
+
   const [formIsValid, setFormIsValid] = useState(false);
   const authCtx = useContext(AuthContext);
-  const [emailState , dispatchEmail] = useReducer(emailReducer , {value:"" , isValid:true})
-  const [passwordState , dispatchPassword] = useReducer(passwordReducer , {value:"" , isValid:true});
-  const [collegeState , dispatchCollege] = useReducer(collegeReducer , {value:"" , isValid:true})
+  const [emailState , dispatchEmail] = useReducer(emailReducer , {value:"" , isValid:null})
+  const [passwordState , dispatchPassword] = useReducer(passwordReducer , {value:"" , isValid:null});
+  const [collegeState , dispatchCollege] = useReducer(collegeReducer , {value:"" , isValid:null})
   // useEffect(() =>{
     
   //   const timer = setTimeout(() => { 
@@ -62,7 +57,9 @@ const Login = (props) => {
   //     clearTimeout(timer);
   //   }
   // }, [emailState , enteredPassword , enteredCollege])
-
+  const emailInputRef = useRef();
+  const passwordInputRef = useRef();
+  const collegeInputRef = useRef();
   const emailChangeHandler = (event) => {
     dispatchEmail({type:'USER_INPUT' , val:event.target.value})
     setFormIsValid(
@@ -95,24 +92,37 @@ const Login = (props) => {
   };
   const submitHandler = (event) => {
     event.preventDefault();
-    authCtx.login(emailState.value, passwordState.value , collegeState.value);
+    if(formIsValid){
+
+      authCtx.login(emailState.value, passwordState.value , collegeState.value);
+    }
+    else if(!emailState.isValid){
+      
+      emailInputRef.current.focus();
+    }else if(!collegeState.isValid){
+      
+      collegeInputRef.current.focus();
+    }else{
+      
+      passwordInputRef.current.focus();
+    }
   };
 
   return (
     <Card className={classes.login}>
       <form onSubmit={submitHandler}>
         
-        <FormInput state={emailState} label={"E-mail"} id={"email"} type={"email"} 
+        <FormInput ref={emailInputRef} state={emailState} label={"E-mail"} id={"email"} type={"email"} 
         change={emailChangeHandler}  blur={validateEmailHandler} />
 
-        <FormInput state={collegeState} label={"College"} id={"college"} type={"text"} 
+        <FormInput ref={collegeInputRef} state={collegeState} label={"College"} id={"college"} type={"text"} 
         change={collegeChangeHandler}  blur={validateCollegeHandler} />
-        
-        <FormInput state={passwordState} label={"Password"} id={"password"} type={"password"} 
+
+        <FormInput ref={passwordInputRef} state={passwordState} label={"Password"} id={"password"} type={"password"} 
         change={passwordChangeHandler}  blur={validatePasswordHandler} />
         
         <div className={classes.actions}>
-          <Button type="submit" className={classes.btn} disabled={!formIsValid}>
+          <Button type="submit" className={classes.btn}>
             Login
           </Button>
         </div>

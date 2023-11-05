@@ -17,7 +17,7 @@ function App() {
           {!authCtx.isLoggedIn && <Login/>}
           {authCtx.isLoggedIn && <Home/>}
         </main>
-        <Testing/>
+        {/* <Testing/> */}
     
     </React.Fragment>
   );

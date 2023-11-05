@@ -1,17 +1,21 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const Testing = () =>{
     const [count , setCount] = useState(0);
+    const [input ,setInput] = useState('');
+    useEffect(() =>{
+        setCount(count+1);
+    }, [input])
     // const increment = () =>{
     //     setCount(count+1);
     //     setCount(count+2);
     //     setCount(count+3);
     // }
-    const increment = () => {
-        setCount(prevCount => prevCount + 1);
-        setCount(prevCount => prevCount + 2);
-        setCount(prevCount => prevCount + 3);
-    }
+    // const increment = () => {
+    //     setCount(prevCount => prevCount + 1);
+    //     setCount(prevCount => prevCount + 2);
+    //     setCount(prevCount => prevCount + 3);
+    // }
     /*The reason only setCount(count+3) is executing is due to the way React batches state updates.
      When you call setCount, it doesn’t immediately update the count value.
       Instead, it schedules an update to happen in the future.
@@ -28,7 +32,7 @@ In your increment function, when you call setCount(count+1), setCount(count+2),
 */    
     return(
         <>
-            <button onClick={increment}>Click</button>
+            <input type="text" value={input} onChange={(e) => setInput(e.target.value)}/>
             <h4>{count}</h4>
         </>
     )
